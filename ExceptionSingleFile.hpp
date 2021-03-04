@@ -82,7 +82,7 @@ namespace Lux
                 GE = static_cast<u32>(et);
             else
                 std::abort();
-            return U();
+            return U;
         }
 
         [[nodiscard]] inline constexpr const bool CatchAny(u32& DGE = GE, bool& DHGE = HGE) noexcept
