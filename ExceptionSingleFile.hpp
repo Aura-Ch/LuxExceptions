@@ -15,12 +15,6 @@ namespace Lux
     using s64 = std::int64_t;
     using f64 = double;
 
-    class throwable
-    {
-    public:
-        inline constexpr throwable() noexcept = default;
-    };
-
     namespace Concepts
     {
         template<class T> class IsUnsignedClass
@@ -114,7 +108,7 @@ namespace Lux
         }
 
         #define try Lux::Exception::Try();{
-        #define throw(x, y) return Lux::Exception::Throw<decltype(x), y>(x)
+        #define throw(x, y, ...) return Lux::Exception::Throw<decltype(x), y(##__VA_ARGS__)>(x)
         #define catch(x, ...) }if(Lux::Exception::Catch(x, ##__VA_ARGS__))
         #define any }if(Lux::Exception::CatchAny())
         #define exception(x) enum class x : Lux::u32
