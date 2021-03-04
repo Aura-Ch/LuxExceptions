@@ -27,7 +27,7 @@ namespace Lux
 
         [[nodiscard]] inline constexpr Throwable(T t) noexcept : v(t){}
 
-        [[nodiscard]] inline constexpr T& operator()() noexcept
+        [[nodiscard]] inline constexpr T operator()() noexcept
         {
             return std::get<T>(v);
         }
