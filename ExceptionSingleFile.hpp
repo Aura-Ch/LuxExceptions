@@ -15,7 +15,7 @@ namespace Lux
     using u64 = std::uint64_t;
     using s64 = std::int64_t;
     using f64 = double;
-    template<class T> using throwable = std::variant<T, const u32>;
+    template<class T> using throwable = std::variant<T, const bool>;
 
     namespace Concepts
     {
