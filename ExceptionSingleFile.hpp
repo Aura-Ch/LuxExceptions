@@ -79,13 +79,13 @@ namespace Lux
             DHGE = true;
         }
 
-        template<class T> inline constexpr const u32 Throw(T et) noexcept requires Concepts::IsEnum<T> && Concepts::IsSize<T, 4u> && Concepts::IsUnsigned<decltype(static_cast<u32>(T()))>
+        template<class T> inline constexpr const bool Throw(T et) noexcept requires Concepts::IsEnum<T> && Concepts::IsSize<T, 4u> && Concepts::IsUnsigned<decltype(static_cast<u32>(T()))>
         {
             if(HGE)
                 GE = static_cast<u32>(et);
             else
                 std::abort();
-            return 0u;
+            return false;
         }
 
         [[nodiscard]] inline constexpr const bool CatchAny(u32& DGE = GE, bool& DHGE = HGE) noexcept
