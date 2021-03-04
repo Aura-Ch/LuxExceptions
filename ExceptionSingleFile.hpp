@@ -23,7 +23,7 @@ namespace Lux
     public:
         [[nodiscard]] inline constexpr Throwable() noexcept = default;
 
-        [[nodiscard]] inline constexpr Throwable(const bool b) noexcept : v(b){}
+        [[nodiscard]] inline constexpr Throwable(const bool) noexcept{}
 
         [[nodiscard]] inline constexpr Throwable(T t) noexcept : v(t){}
 
