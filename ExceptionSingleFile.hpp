@@ -1,74 +1,34 @@
 #include <cstdint>
 #include <cstdlib>
+#include <type_traits>
 
 namespace Lux
 {
-    using letter = char8_t;
-    using u8 = std::uint8_t;
-    using s8 = std::int8_t;
-    using u16 = std::uint16_t;
-    using s16 = std::int16_t;
     using u32 = std::uint32_t;
-    using s32 = std::int32_t;
-    using f32 = float;
-    using u64 = std::uint64_t;
-    using s64 = std::int64_t;
-    using f64 = double;
 
     namespace Concepts
     {
-        template<class T> class IsUnsignedClass
+        template<class T> concept IsEnum = __is_enum(T);
+
+        template<class T, class U> class IsSameClass
         {
         public:
             static constexpr bool Value = false;
         };
 
-        template<> class IsUnsignedClass<bool>
+        template<class T> class IsSameClass<T, T>
         {
         public:
             static constexpr bool Value = true;
         };
 
-        template<> class IsUnsignedClass<letter>
-        {
-        public:
-            static constexpr bool Value = true;
-        };
-
-        template<> class IsUnsignedClass<u8>
-        {
-        public:
-            static constexpr bool Value = true;
-        };
-
-        template<> class IsUnsignedClass<u16>
-        {
-        public:
-            static constexpr bool Value = true;
-        };
-
-        template<> class IsUnsignedClass<u32>
-        {
-        public:
-            static constexpr bool Value = true;
-        };
-
-        template<> class IsUnsignedClass<u64>
-        {
-        public:
-            static constexpr bool Value = true;
-        };
-
-        template<class T> concept IsUnsigned = IsUnsignedClass<T>::Value;
-
-        template<class T, u64 Size> concept IsSize = Size == sizeof(T);
-
-        template<class T> concept IsEnum = __is_enum(T);
+        template<class T, class U> concept IsSame = IsSameClass<T, U>::Value;
     }
 
     namespace Exception
     {
         thread_local u32 GE = 0u;
+        thread_local u32 LGE = 0u;
         thread_local bool HGE = false;
 
         inline constexpr void Try(bool& DHGE = HGE) noexcept
@@ -76,7 +36,7 @@ namespace Lux
             DHGE = true;
         }
 
-        template<class T> inline constexpr const bool Throw(T et) noexcept requires Concepts::IsEnum<T> && Concepts::IsSize<T, 4u> && Concepts::IsUnsigned<decltype(static_cast<u32>(T()))>
+        template<class T> inline constexpr const bool Throw(T et) noexcept requires Concepts::IsEnum<T> && Concepts::IsSame<u32, std::underlying_type_t<T>>
         {
             if(HGE)
             {
@@ -93,7 +53,7 @@ namespace Lux
             return DGE != 0u;
         }
 
-        template<class T, class... U> [[nodiscard]] inline constexpr const bool Catch(T et, U&&... ets) noexcept requires Concepts::IsEnum<T> && Concepts::IsSize<T, 4u> && Concepts::IsUnsigned<decltype(static_cast<u32>(T()))>
+        template<class T, class... U> [[nodiscard]] inline constexpr const bool Catch(T et, U&&... ets) noexcept requires Concepts::IsEnum<T> && Concepts::IsSame<u32, std::underlying_type_t<T>>
         {
             if(static_cast<u32>(et) == GE)
             {
@@ -108,7 +68,7 @@ namespace Lux
             return false;
         }
 
-        template<class T> [[nodiscard]] inline constexpr T GetLastEx() noexcept requires Concepts::IsEnum<T> && Concepts::IsSize<T, 4u>
+        template<class T> [[nodiscard]] inline constexpr T GetLastEx() noexcept requires Concepts::IsEnum<T> && Concepts::IsSame<u32, std::underlying_type_t<T>>
         {
             return static_cast<T>(LGE);
         }
