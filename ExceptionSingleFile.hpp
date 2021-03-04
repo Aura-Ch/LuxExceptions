@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <cstdlib>
+#include <variant>
 
 namespace Lux
 {
@@ -14,6 +15,7 @@ namespace Lux
     using u64 = std::uint64_t;
     using s64 = std::int64_t;
     using f64 = double;
+    template<class T> using throwable = std::variant<T, const u32>;
 
     namespace Concepts
     {
@@ -77,13 +79,13 @@ namespace Lux
             DHGE = true;
         }
 
-        template<class T, class U> inline constexpr U Throw(T et) noexcept requires Concepts::IsEnum<T> && Concepts::IsSize<T, 4u> && Concepts::IsUnsigned<decltype(static_cast<u32>(T()))>
+        template<class T> inline constexpr const u32 Throw(T et) noexcept requires Concepts::IsEnum<T> && Concepts::IsSize<T, 4u> && Concepts::IsUnsigned<decltype(static_cast<u32>(T()))>
         {
             if(HGE)
                 GE = static_cast<u32>(et);
             else
                 std::abort();
-            return U();
+            return 0u;
         }
 
         [[nodiscard]] inline constexpr const bool CatchAny(u32& DGE = GE, bool& DHGE = HGE) noexcept
@@ -118,10 +120,10 @@ namespace Lux
         }
 
         #define try Lux::Exception::Try();{
-        #define throw(x, y) return Lux::Exception::Throw<decltype(x), y>(x);
+        #define throw(x, y) return std::get<const u32>(Lux::Exception::Throw(x));
         #define catch(x, ...) }if(Lux::Exception::Catch(x, ##__VA_ARGS__))
         #define any }if(Lux::Exception::CatchAny())
         #define exception(x) enum class x : Lux::u32
-        #define request(x) Lux::Exception::GetLastEx<x>() 
+        #define request(x) Lux::Exception::GetLastEx<x>()
     }
 }
