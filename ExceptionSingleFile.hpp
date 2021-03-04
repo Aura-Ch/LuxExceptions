@@ -108,7 +108,7 @@ namespace Lux
 
         #define try Lux::Exception::Try();
         #define throw(x) Lux::Exception::Throw(x)
-        #define throw_ret(x, y) Lux::Exception::Throw(x); return y
+        #define throwret(x, y) Lux::Exception::Throw(x); return y
         #define catch(x, ...) if(Lux::Exception::Catch(x, ##__VA_ARGS__))
         #define any if(Lux::Exception::CatchAny())
         #define exception(x) enum class x : Lux::u32
