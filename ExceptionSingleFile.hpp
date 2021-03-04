@@ -1,6 +1,5 @@
 #include <cstdint>
 #include <cstdlib>
-#include <variant>
 
 namespace Lux
 {
@@ -16,21 +15,10 @@ namespace Lux
     using s64 = std::int64_t;
     using f64 = double;
 
-    template<class T> class Throwable
+    class throwable
     {
-    private:
-        std::variant<T, const bool> v;
     public:
-        [[nodiscard]] inline constexpr Throwable() noexcept = default;
-
-        [[nodiscard]] inline constexpr Throwable(const bool) noexcept{}
-
-        [[nodiscard]] inline constexpr Throwable(T t) noexcept : v(t){}
-
-        [[nodiscard]] inline constexpr T operator()() noexcept
-        {
-            return std::get<T>(v);
-        }
+        inline constexpr throwable() noexcept = default;
     };
 
     namespace Concepts
@@ -87,7 +75,6 @@ namespace Lux
     namespace Exception
     {
         thread_local u32 GE = 0u;
-        thread_local u32 LGE = 0u;
         thread_local bool HGE = false;
 
         inline constexpr void Try(bool& DHGE = HGE) noexcept
@@ -95,34 +82,25 @@ namespace Lux
             DHGE = true;
         }
 
-        template<class T> inline constexpr const bool Throw(T et) noexcept requires Concepts::IsEnum<T> && Concepts::IsSize<T, 4u> && Concepts::IsUnsigned<decltype(static_cast<u32>(T()))>
+        template<class T, class U> inline constexpr U Throw(T et) noexcept requires Concepts::IsEnum<T> && Concepts::IsSize<T, 4u> && Concepts::IsUnsigned<decltype(static_cast<u32>(T()))>
         {
             if(HGE)
                 GE = static_cast<u32>(et);
             else
                 std::abort();
-            return false;
+            return U();
         }
 
         [[nodiscard]] inline constexpr const bool CatchAny(u32& DGE = GE, bool& DHGE = HGE) noexcept
         {
             DHGE = false;
-            if(DGE != 0u)
-            {
-                LGE = GE;
-                GE = 0u;
-                return true;
-            }
-            return false;
+            return DGE != 0u;
         }
 
         template<class T, class... U> [[nodiscard]] inline constexpr const bool Catch(T et, U&&... ets) noexcept requires Concepts::IsEnum<T> && Concepts::IsSize<T, 4u> && Concepts::IsUnsigned<decltype(static_cast<u32>(T()))>
         {
             if(static_cast<u32>(et) == GE)
-            {
-                GE = 0u;
                 return true;
-            }
             else if constexpr(sizeof...(ets) > 0u)
                 return Catch(ets...);
             else if(GE != 0u)
@@ -132,11 +110,11 @@ namespace Lux
 
         template<class T> [[nodiscard]] inline constexpr T GetLastEx() noexcept requires Concepts::IsEnum<T> && Concepts::IsSize<T, 4u>
         {
-            return static_cast<T>(LGE);
+            return static_cast<T>(GE);
         }
 
         #define try Lux::Exception::Try();{
-        #define throw(x) return Lux::Exception::Throw(x)
+        #define throw(x, y) return Lux::Exception::Throw<decltype(x), y>(x)
         #define catch(x, ...) }if(Lux::Exception::Catch(x, ##__VA_ARGS__))
         #define any }if(Lux::Exception::CatchAny())
         #define exception(x) enum class x : Lux::u32
