@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <variant>
+#include <utility>
 
 namespace Lux
 {
@@ -15,7 +16,23 @@ namespace Lux
     using u64 = std::uint64_t;
     using s64 = std::int64_t;
     using f64 = double;
-    template<class T> using throwable = std::variant<T, const bool>;
+
+    template<class T> class Throwable
+    {
+    private:
+        std::variant<T, const bool> v;
+    public:
+        [[nodiscard]] inline constexpr Throwable() noexcept = default;
+
+        [[nodiscard]] inline constexpr Throwable(const bool) noexcept{}
+
+        [[nodiscard]] inline constexpr Throwable(T t) noexcept : v(t){}
+
+        [[nodiscard]] inline constexpr T operator()() const noexcept
+        {
+            return std::get<T>(v);
+        }
+    };
 
     namespace Concepts
     {
