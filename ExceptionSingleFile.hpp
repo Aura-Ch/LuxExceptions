@@ -76,13 +76,12 @@ namespace Lux
             DHGE = true;
         }
 
-        template<class T, class U> inline constexpr U Throw(T et) noexcept requires Concepts::IsEnum<T> && Concepts::IsSize<T, 4u> && Concepts::IsUnsigned<decltype(static_cast<u32>(T()))>
+        template<class T> inline constexpr void Throw(T et) noexcept requires Concepts::IsEnum<T> && Concepts::IsSize<T, 4u> && Concepts::IsUnsigned<decltype(static_cast<u32>(T()))>
         {
             if(HGE)
                 GE = static_cast<u32>(et);
             else
                 std::abort();
-            return U;
         }
 
         [[nodiscard]] inline constexpr const bool CatchAny(u32& DGE = GE, bool& DHGE = HGE) noexcept
@@ -107,10 +106,10 @@ namespace Lux
             return static_cast<T>(GE);
         }
 
-        #define try Lux::Exception::Try();{
-        #define throw(x, y, ...) return Lux::Exception::Throw<decltype(x), y(##__VA_ARGS__)>(x)
-        #define catch(x, ...) }if(Lux::Exception::Catch(x, ##__VA_ARGS__))
-        #define any }if(Lux::Exception::CatchAny())
+        #define try Lux::Exception::Try();
+        #define throw(x) Lux::Exception::Throw(x)
+        #define catch(x, ...) if(Lux::Exception::Catch(x, ##__VA_ARGS__))
+        #define any if(Lux::Exception::CatchAny())
         #define exception(x) enum class x : Lux::u32
         #define request(x) Lux::Exception::GetLastEx<x>()
     }
