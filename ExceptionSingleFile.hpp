@@ -27,9 +27,9 @@ namespace Lux
 
     namespace Exception
     {
-        thread_local u32 GE = 0u;
-        thread_local u32 LGE = 0u;
-        thread_local bool HGE = false;
+        constinit thread_local u32 GE = 0u;
+        constinit thread_local u32 LGE = 0u;
+        constinit thread_local bool HGE = false;
 
         inline constexpr void Try(bool& DHGE = HGE) noexcept
         {
