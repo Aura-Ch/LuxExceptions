@@ -18,3 +18,5 @@ and, if you didn't catch the specific thrown exception, it will abort https://go
 now, about limitations... there's only one that i consider significant, you can't have multiple catch's consecutively to each other
 BUT, you can catch multiple exceptions at once, and call request to get the specific thrown exception
 like https://godbolt.org/z/4G5rGs
+
+and for functions that won't return anything, like https://godbolt.org/z/cjnf1c, use 'nrethrow'
