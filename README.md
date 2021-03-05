@@ -19,4 +19,4 @@ now, about limitations... there's only one that i consider significant, you can'
 BUT, you can catch multiple exceptions at once, and call request to get the specific thrown exception
 like https://godbolt.org/z/4G5rGs
 
-and for functions that won't return anything, like https://godbolt.org/z/cjnf1c, use 'nrethrow'
+and for functions that won't return anything, like https://godbolt.org/z/svndvd, use 'nrethrow'
